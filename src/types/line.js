@@ -104,18 +104,22 @@ module.exports = function(Chart) {
 			var chartInstance = this.chartInstance;
 			var ctx = chartInstance.chart.ctx;
 
+			var chartArea = chartInstance.chartArea;
+
 			var scale = chartInstance.scales[options.scaleID];
-			var pixel, endPixel;
+			var xScale = chartInstance.scales[options.xScaleID];
+			var pixel, endPixel, xMin, xMax;
 			if (scale) {
 				pixel = helpers.isValid(options.value) ? scale.getPixelForValue(options.value, options.value.index) : NaN;
 				endPixel = helpers.isValid(options.endValue) ? scale.getPixelForValue(options.endValue, options.value.index) : pixel;
+				xMin = helpers.isValid(options.xMin) ? xScale.getPixelForValue(options.xMin, options.value.index) : chartArea.left;
+				xMax = helpers.isValid(options.xMax) ? xScale.getPixelForValue(options.xMax, options.value.index) : chartArea.right;
 			}
 
 			if (isNaN(pixel)) {
 				return;
 			}
 
-			var chartArea = chartInstance.chartArea;
 
 			// clip annotations to the chart area
 			model.clip = {
@@ -126,8 +130,8 @@ module.exports = function(Chart) {
 			};
 
 			if (this.options.mode === horizontalKeyword) {
-				model.x1 = chartArea.left;
-				model.x2 = chartArea.right;
+				model.x1 = xMin;
+				model.x2 = xMax;
 				model.y1 = pixel;
 				model.y2 = endPixel;
 			} else {
